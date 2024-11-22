@@ -1,5 +1,5 @@
-#identity with Techs:
+#identity-service with Techs:
 
-Backend: Java Spring Boot
-Frontend: React
-Database: MySQL
+- Backend: Java Spring Boot
+- Frontend: React
+- Database: MySQL
