@@ -1,9 +1,6 @@
 package com.ndtdoanh.identity_service.entity;
 
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
@@ -14,8 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.util.Set;
+
 
 @Data
 @Builder
@@ -24,15 +21,12 @@ import java.util.Set;
 @ToString
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
-    String username;
-    String password;
-    String firstName;
-    String lastName;
-    LocalDate dob;
+    String name;
+    String description;
+
     @ManyToMany
-    Set<Role> roles;
+    Set<Permission> permissions;
 }
+
