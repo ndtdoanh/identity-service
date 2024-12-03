@@ -2,11 +2,14 @@ package com.ndtdoanh.identity_service.service;
 
 import com.ndtdoanh.identity_service.dto.request.AuthenticationRequest;
 import com.ndtdoanh.identity_service.dto.request.IntrospectRequest;
+import com.ndtdoanh.identity_service.dto.request.LogoutRequest;
 import com.ndtdoanh.identity_service.dto.response.AuthenticationResponse;
 import com.ndtdoanh.identity_service.dto.response.IntrospectResponse;
+import com.ndtdoanh.identity_service.entity.InvalidatedToken;
 import com.ndtdoanh.identity_service.entity.User;
 import com.ndtdoanh.identity_service.exception.AppException;
 import com.ndtdoanh.identity_service.exception.ErrorCode;
+import com.ndtdoanh.identity_service.repository.InvalidatedTokenRepository;
 import com.ndtdoanh.identity_service.repository.UserRepository;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -32,9 +35,9 @@ import org.springframework.util.CollectionUtils;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ import java.util.StringJoiner;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
      UserRepository userRepository;
+     InvalidatedTokenRepository invalidatedTokenRepository;
 
      @NonFinal
      @Value("${jwt.signerKey}")
@@ -50,19 +54,17 @@ public class AuthenticationService {
      public IntrospectResponse introspect(IntrospectRequest request)
              throws JOSEException, ParseException {
          var token = request.getToken();
+         boolean isValid = true;
 
-         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-         SignedJWT signedJWT = SignedJWT.parse(token);
-
-         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-         var verified = signedJWT.verify(verifier);
+         try {
+             verifyToken(token);
+         } catch (AppException e){
+             isValid = false;
+         }
 
          return IntrospectResponse.builder()
-                 .valid(verified && expiryTime.after(new Date()))
+                 .valid(isValid)
                  .build();
-
      }
 
      public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -84,6 +86,39 @@ public class AuthenticationService {
                  .build();
     }
 
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        var signToken = verifyToken(request.getToken());
+
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        if (!(verified && expiryTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (invalidatedTokenRepository
+                .existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        return signedJWT;
+    }
+
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -94,6 +129,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
 
