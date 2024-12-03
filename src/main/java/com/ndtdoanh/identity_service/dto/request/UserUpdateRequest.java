@@ -1,5 +1,6 @@
 package com.ndtdoanh.identity_service.dto.request;
 
+import com.ndtdoanh.identity_service.validator.DobConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class UserUpdateRequest {
      String password;
      String firstName;
      String lastName;
+     @DobConstraint(min = 2, message = "INVALID_DOB")
      LocalDate dob;
      List<String> roles;
 }
