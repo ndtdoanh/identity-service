@@ -3,6 +3,7 @@ package com.ndtdoanh.identity_service.service;
 import com.ndtdoanh.identity_service.dto.request.AuthenticationRequest;
 import com.ndtdoanh.identity_service.dto.request.IntrospectRequest;
 import com.ndtdoanh.identity_service.dto.request.LogoutRequest;
+import com.ndtdoanh.identity_service.dto.request.RefreshRequest;
 import com.ndtdoanh.identity_service.dto.response.AuthenticationResponse;
 import com.ndtdoanh.identity_service.dto.response.IntrospectResponse;
 import com.ndtdoanh.identity_service.entity.InvalidatedToken;
@@ -36,6 +37,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -117,6 +119,34 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         return signedJWT;
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request)
+            throws ParseException, JOSEException {
+         var signedJWT = verifyToken(request.getToken());
+
+         var jit = signedJWT.getJWTClaimsSet().getJWTID();
+         var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        var username = signedJWT.getJWTClaimsSet().getSubject();
+
+        var user = userRepository.findByUsername(username).orElseThrow(
+                () -> new AppException(ErrorCode.UNAUTHENTICATED)
+        );
+
+        var token = generateToken(user);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
     }
 
     private String generateToken(User user) {
