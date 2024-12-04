@@ -35,6 +35,8 @@ public class UserService {
      PasswordEncoder passwordEncoder;
 
      public UserResponse createUser(UserRequest request){
+        log.info("Service: create User");
+
         if(userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
