@@ -1,10 +1,12 @@
 package com.ndtdoanh.identity_service.service;
 
-import com.ndtdoanh.identity_service.dto.request.UserRequest;
-import com.ndtdoanh.identity_service.dto.response.UserResponse;
-import com.ndtdoanh.identity_service.entity.User;
-import com.ndtdoanh.identity_service.exception.AppException;
-import com.ndtdoanh.identity_service.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,13 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.time.LocalDate;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import com.ndtdoanh.identity_service.dto.request.UserRequest;
+import com.ndtdoanh.identity_service.dto.response.UserResponse;
+import com.ndtdoanh.identity_service.entity.User;
+import com.ndtdoanh.identity_service.exception.AppException;
+import com.ndtdoanh.identity_service.repository.UserRepository;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -34,7 +34,7 @@ public class UserServiceTest {
     private LocalDate dob;
 
     @BeforeEach
-    void initData(){
+    void initData() {
         dob = LocalDate.of(2002, 2, 20);
 
         request = UserRequest.builder()
@@ -63,7 +63,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUser_validRequest_success(){
+    void createUser_validRequest_success() {
         // GIVEN
         when(userRepository.existsByUsername(anyString())).thenReturn(false);
         when(userRepository.save(any())).thenReturn(user);
@@ -78,37 +78,14 @@ public class UserServiceTest {
     }
 
     @Test
-    void createUser_userExisted_fail(){
+    void createUser_userExisted_fail() {
         // GIVEN
         when(userRepository.existsByUsername(anyString())).thenReturn(true);
 
         // WHEN
-        var exception = assertThrows(AppException.class,
-                () -> userService.createUser(request));
+        var exception = assertThrows(AppException.class, () -> userService.createUser(request));
 
         // THEN
-        Assertions.assertThat(exception.getErrorCode().getCode())
-                .isEqualTo(1002);
+        Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1002);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

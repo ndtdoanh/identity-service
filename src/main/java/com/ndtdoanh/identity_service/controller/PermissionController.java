@@ -1,13 +1,7 @@
 package com.ndtdoanh.identity_service.controller;
 
-import com.ndtdoanh.identity_service.dto.request.ApiResponse;
-import com.ndtdoanh.identity_service.dto.request.PermissionRequest;
-import com.ndtdoanh.identity_service.dto.response.PermissionResponse;
-import com.ndtdoanh.identity_service.service.PermissionService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +10,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.ndtdoanh.identity_service.dto.request.ApiResponse;
+import com.ndtdoanh.identity_service.dto.request.PermissionRequest;
+import com.ndtdoanh.identity_service.dto.response.PermissionResponse;
+import com.ndtdoanh.identity_service.service.PermissionService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController

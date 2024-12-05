@@ -1,15 +1,9 @@
 package com.ndtdoanh.identity_service.controller;
 
-import com.ndtdoanh.identity_service.dto.request.ApiResponse;
-import com.ndtdoanh.identity_service.dto.request.UserRequest;
-import com.ndtdoanh.identity_service.dto.request.UserUpdateRequest;
-import com.ndtdoanh.identity_service.dto.response.UserResponse;
-import com.ndtdoanh.identity_service.service.UserService;
+import java.util.List;
+
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +14,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.ndtdoanh.identity_service.dto.request.ApiResponse;
+import com.ndtdoanh.identity_service.dto.request.UserRequest;
+import com.ndtdoanh.identity_service.dto.request.UserUpdateRequest;
+import com.ndtdoanh.identity_service.dto.response.UserResponse;
+import com.ndtdoanh.identity_service.service.UserService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -76,5 +79,4 @@ public class UserController {
                 .result(userService.updateUser(userId, request))
                 .build();
     }
-
 }
