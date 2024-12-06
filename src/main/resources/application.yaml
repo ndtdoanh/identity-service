@@ -5,9 +5,9 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/identity_service"
-    username: root
-    password: 12345
+    url: ${DBMS_CONNECTION}
+    username: ${DBMS_USERNAME}
+    password: ${DBMS_PASSWORD}
 
   jpa:
     hibernate:
@@ -17,4 +17,4 @@ spring:
 jwt:
   signerKey: "3ZrguQexZQRXtCX8xXPICyhaGFgs6bhdpqrKSb8iQ491QvDsg0+mYDVOcmdFYjYu"
   valid-duration: 3600 #in second
-  refreshable-duration: 360000 #in seconds
+  refreshable-duration: 36000 #in seconds
