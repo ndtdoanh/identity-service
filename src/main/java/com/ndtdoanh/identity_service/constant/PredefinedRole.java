@@ -6,4 +6,3 @@ public class PredefinedRole {
 
     private PredefinedRole() {}
 }
-

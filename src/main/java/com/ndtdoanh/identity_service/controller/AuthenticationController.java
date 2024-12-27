@@ -7,11 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ndtdoanh.identity_service.dto.request.ApiResponse;
-import com.ndtdoanh.identity_service.dto.request.AuthenticationRequest;
-import com.ndtdoanh.identity_service.dto.request.IntrospectRequest;
-import com.ndtdoanh.identity_service.dto.request.LogoutRequest;
-import com.ndtdoanh.identity_service.dto.request.RefreshRequest;
+import com.ndtdoanh.identity_service.dto.request.*;
 import com.ndtdoanh.identity_service.dto.response.AuthenticationResponse;
 import com.ndtdoanh.identity_service.dto.response.IntrospectResponse;
 import com.ndtdoanh.identity_service.service.AuthenticationService;
